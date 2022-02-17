@@ -58,7 +58,7 @@ exports.hosting = async (req, res) => {
 
     if(key){
     const algorithm = 'aes-256-ctr';
-    iv = query.iv.data;
+    iv = query.iv;
     const secret = crypto.createHash('sha256').update(key).digest('base64').substr(0, 32);
     const cipher = crypto.createDecipheriv(algorithm, secret, iv);
     const Decrypted = Buffer.concat([cipher.update(Data), cipher.final()]);
