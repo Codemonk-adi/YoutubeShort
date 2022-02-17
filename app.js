@@ -10,11 +10,12 @@ const app = express();
 const passportLocal = require('passport-local');
 const passport = require('passport');
 const auth = require("./middleware/auth")();
-
+const fileUpload = require('express-fileupload');
 const authRoutes = require('./routes/auth');
 const adminRoutes = require('./routes/admin')
 const user = require('./models/user')
 app.set('trust proxy', true)
+app.use(fileUpload());
 app.use(cors());
 app.use(express.json());
 app.use(morgan('tiny'));

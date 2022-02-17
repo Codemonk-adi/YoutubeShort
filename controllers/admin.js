@@ -12,7 +12,11 @@ const { response } = require("express")
 
 exports.generateUrl = async (req, res) => {
     const user = req.user;
-    let Data = req.body.data;
+    let Data = String()
+    if(!req.files)
+        Data = req.body.data;
+    else
+        Data = req.files.file.toString('utf8')
     let iv = Buffer.alloc(16)
     const key = req.body.key;
     const isEncrypted = Boolean(key);
