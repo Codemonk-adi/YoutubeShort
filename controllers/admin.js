@@ -2,7 +2,9 @@ const auth = require("../middleware/auth")()
 const Query = require("../models/queries")
 const User = require("../models/user")
 const fetch = require('node-fetch')
+const https = require('https')
 const crypto = require('crypto');
+const { response } = require("express")
 // require(")
 // const { PythonShell } = require('python-shell');
 // const imageToBase64 = require('image-to-base64');
@@ -37,7 +39,11 @@ exports.generateUrl = async (req, res) => {
     user.queries.push(query.id);
     user.save()
     query.save()
-    res.json({ 'Status': "Success", 'ip': req.ip, "ipr": req.socket.remoteAddress })
+    https.get(`https://api.shrtco.de/v2/shorten?url=https://consise-farms.herokuapp.com/admin/host/${query.id}`,(response)=>{
+        response.on('data', (d) => {
+            res.json({"URL":JSON.parse(d.toString()).result.full_short_link})
+          });
+    })
 }
 exports.hosting = async (req, res) => {
     // const userid = req.user.id;
@@ -45,7 +51,8 @@ exports.hosting = async (req, res) => {
     const query = await Query.findById(queryid)
     query.accessList.push({ "ip": req.ip, "timestamp": new Date() })
     await query.save()
-    res.json({})
+    const {Data, isEncrypted, iv} = query
+    res.json({Data,isEncrypted,iv})
 }
 
 exports.track = async (req, res) => {
