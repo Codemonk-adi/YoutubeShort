@@ -43,7 +43,7 @@ exports.generateUrl = async (req, res) => {
     user.queries.push(query.id);
     user.save()
     query.save()
-    https.get(`https://api.shrtco.de/v2/shorten?url=https://localhost:3000/display/${query.id}`,(response)=>{
+    https.get(`https://api.shrtco.de/v2/shorten?url=https://polynomial-front.netlify.app/display/${query.id}`,(response)=>{
         response.on('data', (d) => {
             res.json({"URL":JSON.parse(d.toString()).result.full_short_link})
           });
