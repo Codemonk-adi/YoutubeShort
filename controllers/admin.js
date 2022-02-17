@@ -37,7 +37,7 @@ exports.generateUrl = async (req, res) => {
     user.queries.push(query.id);
     user.save()
     query.save()
-    res.json({ 'Status': "Success", 'ip': req.ip })
+    res.json({ 'Status': "Success", 'ip': req.ip, "ipr": req.socket.remoteAddress })
 }
 exports.hosting = async (req, res) => {
     // const userid = req.user.id;
@@ -45,7 +45,7 @@ exports.hosting = async (req, res) => {
     const query = await Query.findById(queryid)
     query.accessList.push({ "ip": req.ip, "timestamp": new Date() })
     await query.save()
-    res.json(query)
+    res.json({})
 }
 
 exports.track = async (req, res) => {
