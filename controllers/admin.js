@@ -1,39 +1,62 @@
 const auth = require("../middleware/auth")()
 const Query = require("../models/queries")
 const User = require("../models/user")
-
-
+const fetch = require('node-fetch')
+const crypto = require('crypto');
 // require(")
 // const { PythonShell } = require('python-shell');
 // const imageToBase64 = require('image-to-base64');
 // let fs = require("fs
 
-exports.generateUrl = async(req, res) => {
+exports.generateUrl = async (req, res) => {
     const user = req.user;
-    const Data = req.body.data;
+    let Data = req.body.data;
+    let iv = Buffer.alloc(16)
     const key = req.body.key;
     const isEncrypted = Boolean(key);
-    if(isEncrypted){
+    if (isEncrypted) {
+        const algorithm = 'aes-256-ctr';
+        iv = crypto.randomBytes(16);
+        const secret = crypto.createHash('sha256').update(key).digest('base64').substr(0, 32);
+        const cipher = crypto.createCipheriv(algorithm, secret, iv);
+
+        const encrypted = Buffer.concat([cipher.update(Data), cipher.final()]);
+        Data = encrypted.toString('hex')
         
+
     }
     const timestamp = new Date()
-    const ExpireAt = new Date(timestamp.getTime() + 24*60*60*1000);
+    const ExpireAt = new Date(timestamp.getTime() + 24 * 60 * 60 * 1000);
     const query = new Query({
         timestamp,
         ExpireAt,
         isEncrypted,
-        Data
+        Data,
+        iv
     })
     user.queries.push(query.id);
     user.save()
     query.save()
-    res.json({'Status':"Success",'ip':req.ip})
+    res.json({ 'Status': "Success", 'ip': req.ip })
 }
-exports.hosting = async(req, res) => {
-    const userid = req.user.id;
-    const user = await User.findById(userid).populate({ path: 'queries' });
-    res.json(user.queries)
+exports.hosting = async (req, res) => {
+    // const userid = req.user.id;
+    const queryid = req.params.queryid;
+    const query = await Query.findById(queryid)
+    query.accessList.push({ "ip": req.ip, "timestamp": new Date() })
+    await query.save()
+    res.json(query)
 }
+
+exports.track = async (req, res) => {
+    // const userid = req.user.id;
+    const queryid = req.params.queryid;
+    const query = await Query.findById(queryid)
+    accessList = query.accessList
+    // await query.save()
+    res.json(accessList)
+}
+
 
 
 // exports.nosaveparser = async(req, res) => {
@@ -110,17 +133,17 @@ exports.hosting = async(req, res) => {
 
 // }
 
-exports.renewLink = async(req, res) => {
+exports.renewLink = async (req, res) => {
     const { queryid } = req.body;
     const timestamp = new Date()
-    const ExpireAt = new Date(timestamp.getTime() + 24*60*60*1000);
+    const ExpireAt = new Date(timestamp.getTime() + 24 * 60 * 60 * 1000);
     await Query.findByIdAndUpdate(queryid, { $set: { ExpireAt } })
-    res.json({"status":"Success"});
+    res.json({ "status": "Success" });
 }
-exports.deleteLink = async(req, res) => {
+exports.deleteLink = async (req, res) => {
     const { queryid } = req.body;
     // console.log(queryid)
     await User.findByIdAndUpdate(req.user.id, { $pull: { queries: queryid } })
     await Query.findByIdAndDelete(queryid);
-    res.json({"status":"Success"});
+    res.json({ "status": "Success" });
 }
