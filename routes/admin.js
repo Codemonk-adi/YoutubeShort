@@ -1,11 +1,11 @@
 const express = require('express');
 const auth = require('../middleware/auth')();
 const router = express.Router();
-const multer = require('multer');
-const { storage } = require('../cloudinary');
+// const multer = require('multer');
+// const { storage } = require('../cloudinary');
 const { generateUrl, deleteLink, renewLink, hosting, track} = require('../controllers/admin');
 // const { ValidateQuery } = require('../middleware/validator');
-const upload = multer({ storage });
+// const upload = multer({ storage });
 
 router.post('/generateUrl',auth.authenticate(), generateUrl)
 .get('/host/:queryid',hosting)
