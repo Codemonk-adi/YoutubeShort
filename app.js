@@ -14,6 +14,7 @@ const auth = require("./middleware/auth")();
 const authRoutes = require('./routes/auth');
 const adminRoutes = require('./routes/admin')
 const user = require('./models/user')
+app.set('trust proxy', true)
 app.use(cors());
 app.use(express.json());
 app.use(morgan('tiny'));
@@ -32,7 +33,6 @@ mongoose.connect(
 ).then(() => {
     console.log("database connected");
 });
-
 app.use('/api', authRoutes);
 app.use('/admin', adminRoutes);
 app.listen(process.env.PORT, () => {
