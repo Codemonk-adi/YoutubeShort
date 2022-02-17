@@ -53,7 +53,7 @@ exports.hosting = async (req, res) => {
     // const userid = req.user.id;
     const queryid = req.body.queryid;
     const key = req.body.key;
-
+    Data = query.Data
     const query = await Query.findById(queryid)
 
     if(key){
@@ -64,7 +64,6 @@ exports.hosting = async (req, res) => {
     const Decrypted = Buffer.concat([cipher.update(Data), cipher.final()]);
     Data = Decrypted.toString('hex')
     }else
-    Data = query.Data
     query.accessList.push({ "ip": req.ip, "timestamp": new Date() })
     await query.save()
     res.json({Data})
