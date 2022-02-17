@@ -8,7 +8,7 @@ const { generateUrl, deleteLink, renewLink, hosting, track} = require('../contro
 // const upload = multer({ storage });
 
 router.post('/generateUrl',auth.authenticate(), generateUrl)
-.get('/host/:queryid',hosting)
+.get('/host',hosting)
 .get('/track/:queryid',track)
 .post('/delete',auth.authenticate(), deleteLink)
 .post('/renew',auth.authenticate(), renewLink)
