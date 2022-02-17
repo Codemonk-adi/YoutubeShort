@@ -51,12 +51,20 @@ exports.generateUrl = async (req, res) => {
 }
 exports.hosting = async (req, res) => {
     // const userid = req.user.id;
-    const queryid = req.params.queryid;
+    const queryid = req.body.queryid;
+    const key = req.body.key;
+
     const query = await Query.findById(queryid)
+
+    const algorithm = 'aes-256-ctr';
+    iv = query.iv.data;
+    const secret = crypto.createHash('sha256').update(key).digest('base64').substr(0, 32);
+    const cipher = crypto.createDecipheriv(algorithm, secret, iv);
+    const Decrypted = Buffer.concat([cipher.update(Data), cipher.final()]);
+    Data = Decrypted.toString('hex')
     query.accessList.push({ "ip": req.ip, "timestamp": new Date() })
     await query.save()
-    const {Data, isEncrypted, iv} = query
-    res.json({Data,isEncrypted,iv})
+    res.json({Data})
 }
 
 exports.track = async (req, res) => {
