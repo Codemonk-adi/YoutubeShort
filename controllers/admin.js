@@ -56,12 +56,15 @@ exports.hosting = async (req, res) => {
 
     const query = await Query.findById(queryid)
 
+    if(key){
     const algorithm = 'aes-256-ctr';
     iv = query.iv.data;
     const secret = crypto.createHash('sha256').update(key).digest('base64').substr(0, 32);
     const cipher = crypto.createDecipheriv(algorithm, secret, iv);
     const Decrypted = Buffer.concat([cipher.update(Data), cipher.final()]);
     Data = Decrypted.toString('hex')
+    }else
+    Data = query.Data
     query.accessList.push({ "ip": req.ip, "timestamp": new Date() })
     await query.save()
     res.json({Data})
