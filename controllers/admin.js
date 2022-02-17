@@ -53,8 +53,8 @@ exports.hosting = async (req, res) => {
     // const userid = req.user.id;
     const queryid = req.body.queryid;
     const key = req.body.key;
-    Data = query.Data
     const query = await Query.findById(queryid)
+    Data = query.Data
 
     if(key){
     const algorithm = 'aes-256-ctr';
