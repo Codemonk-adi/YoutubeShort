@@ -16,7 +16,7 @@ exports.generateUrl = async (req, res) => {
     if(!req.files)
         Data = req.body.data;
     else
-        Data = req.files.file.toString('utf8')
+        Data = req.files.file.data.toString('utf8')
     let iv = Buffer.alloc(16)
     const key = req.body.key;
     const isEncrypted = Boolean(key);
