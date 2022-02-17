@@ -3,15 +3,23 @@ const auth = require('../middleware/auth')();
 const router = express.Router();
 const multer = require('multer');
 const { storage } = require('../cloudinary');
-const { parser, secureparser, allQueries, deleteQuery, refinedSearch, nosaveparser } = require('../controllers/admin');
-const { ValidateQuery } = require('../middleware/validator');
+const { generateUrl, deleteLink, renewLink} = require('../controllers/admin');
+// const { ValidateQuery } = require('../middleware/validator');
 const upload = multer({ storage });
 
-router.post('/parse', auth.authenticate(), ValidateQuery, upload.array('invoices'), secureparser)
-    .post('/noparse', ValidateQuery, upload.array('invoices'), nosaveparser)
-    .post('/getJson', auth.authenticate(), refinedSearch)
-    .get('/userhistory', auth.authenticate(), allQueries)
-    .post('/deletehistory', auth.authenticate(), deleteQuery)
+router.post('/generateUrl',auth.authenticate(), generateUrl)
+.post('/delete',auth.authenticate(), deleteLink)
+.post('/renew',auth.authenticate(), renewLink)
+
+
+// .post('/parse', auth.authenticate(), upload.array('invoices'), secureparser)
+    // .post('/noparse', upload.array('invoices'), nosaveparser)
+    // .post('/getJson', auth.authenticate(), refinedSearch)
+    // .get('/userhistory', auth.authenticate(), allQueries)
+    // .post('/deletehistory', auth.authenticate(), deleteQuery)
+
+
+
     // .post('/editUser', auth.authenticate())
     // router.post('/signup', ValidateUser, signup, login);
     // router.post('/login', passport.authenticate("local"), login);

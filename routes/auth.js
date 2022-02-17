@@ -6,7 +6,7 @@ const passport = require('passport');
 const WrapperAsync = require('../utils/WrapperAsync');
 const { ValidateUser } = require('../middleware/validator');
 
-router.post('/signup', ValidateUser, signup, login);
+router.post('/signup', ValidateUser,signup, login);
 router.post('/login', passport.authenticate("local"), login);
 
 router.post('/secret', auth.authenticate(), secret)
