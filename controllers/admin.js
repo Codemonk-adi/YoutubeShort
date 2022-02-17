@@ -61,8 +61,8 @@ exports.hosting = async (req, res) => {
     iv = query.iv;
     const secret = crypto.createHash('sha256').update(key).digest('base64').substr(0, 32);
     const cipher = crypto.createDecipheriv(algorithm, secret, iv);
-    const Decrypted = Buffer.concat([cipher.update(Data), cipher.final()]);
-    Data = Decrypted.toString('hex')
+    const Decrypted = Buffer.concat([cipher.update(Data,'hex'), cipher.final()]);
+    Data = Decrypted.toString('utf8')
     }else
     query.accessList.push({ "ip": req.ip, "timestamp": new Date() })
     await query.save()
