@@ -1,4 +1,7 @@
-# urlshortner
+# URLshortner
+
+
+https://user-images.githubusercontent.com/56336914/154612832-9f2921c6-15a7-4dbb-adf6-4114b1a5928c.mp4
 
 This service makes transfering text and code easier and secure, as a bonus it also doubles down as a url shortner.
 A registered user can sign in and enter Text/uploadtext files/paste in the text area and has the option to enter a key for encryption.
