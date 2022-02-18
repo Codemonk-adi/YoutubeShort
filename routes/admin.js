@@ -3,7 +3,7 @@ const auth = require('../middleware/auth')();
 const router = express.Router();
 // const multer = require('multer');
 // const { storage } = require('../cloudinary');
-const { generateUrl, deleteLink, renewLink, hosting, track, forward} = require('../controllers/admin');
+const { generateUrl, deleteLink, renewLink, hosting, track, forward, accessdetails} = require('../controllers/admin');
 // const { ValidateQuery } = require('../middleware/validator');
 // const upload = multer({ storage });
 
@@ -13,6 +13,8 @@ router.post('/generateUrl',auth.authenticate(), generateUrl)
 .get('/track/',auth.authenticate(),track)
 .post('/delete',auth.authenticate(), deleteLink)
 .post('/renew',auth.authenticate(), renewLink)
+.post('/details',auth.authenticate(), accessdetails)
+
 
 
 // .post('/parse', auth.authenticate(), upload.array('invoices'), secureparser)

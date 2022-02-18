@@ -97,7 +97,7 @@ exports.track = async (req, res) => {
     const queryarray = await Query.find({ '_id': { "$in": queries} })
     // console.log(queryarray)
 
-    finalist =  queryarray.map(query =>{
+    finalist = await queryarray.map(query =>{
         const {id,url,timestamp,ExpireAt,accessList} = query
         const sorted = accessList.sort((a,b)=>{
             return a.timestamp.getTime() - b.timestamp.getTime()
@@ -117,9 +117,19 @@ exports.renewLink = async (req, res) => {
     res.json({ "status": "Success" });
 }
 exports.deleteLink = async (req, res) => {
+
     const { queryid } = req.body;
-    // console.log(queryid)
+    console.log(req.user.id)
     await User.findByIdAndUpdate(req.user.id, { $pull: { queries: queryid } })
     await Query.findByIdAndDelete(queryid);
     res.json({ "status": "Success" });
+}
+exports.accessdetails = async (req, res) => {
+    const { queryid } = req.body;
+    const query = await Query.findById(queryid)
+    const {accessList} = query
+        const sorted = accessList.sort((a,b)=>{
+            return a.timestamp.getTime() - b.timestamp.getTime()
+        })
+    res.json({ sorted});
 }
