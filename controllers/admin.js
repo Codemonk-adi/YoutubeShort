@@ -3,7 +3,10 @@ const Query = require("../models/queries")
 const User = require("../models/user")
 const fetch = require('node-fetch')
 const https = require('https')
+const url_check = require('url')
+// import url from 'url';
 const crypto = require('crypto');
+const { query } = require("express")
 
 exports.generateUrl = async (req, res) => {
     const user = req.user;
@@ -26,6 +29,12 @@ exports.generateUrl = async (req, res) => {
 
 
     }
+    let isUrl = true;
+    try{ new URL(Data)
+    }catch(e){
+        isUrl = false;
+    }
+
     const timestamp = new Date()
     const ExpireAt = new Date(timestamp.getTime() + 24 * 60 * 60 * 1000);
     const query = new Query({
@@ -33,11 +42,14 @@ exports.generateUrl = async (req, res) => {
         ExpireAt,
         isEncrypted,
         Data,
-        iv
+        iv,
+        isUrl
     })
     user.queries.push(query.id);
+    // https://polynomial-front.netlify.app/display/${query.id}/${query.isEncrypted}
+    // https://consise-farms.herokuapp.com/host/${query.id}
     user.save()
-    https.get(`https://api.shrtco.de/v2/shorten?url=https://polynomial-front.netlify.app/display/${query.id}/${query.isEncrypted}`, (response) => {
+    https.get(`https://api.shrtco.de/v2/shorten?url=https://consise-farms.herokuapp.com/host/${query.id}`, (response) => {
         response.on('data', (d) => {
             const url = JSON.parse(d.toString()).result.full_short_link 
             query.url = url
@@ -45,6 +57,20 @@ exports.generateUrl = async (req, res) => {
             res.json({ "URL": url})
         });
     })
+}
+exports.forward = async (req,res) =>{
+    const queryid = req.params.queryid;
+    const query = Query.findById(queryid)
+    query.accessList.push({ "ip": req.ip, "timestamp": new Date() })
+    let redirectUrl;
+    if(query.isUrl){
+        redirectUrl = query.Data;
+    }else{
+        redirectUrl = `https://polynomial-front.netlify.app/display/${query.id}/${query.isEncrypted}`
+    }
+    await query.save()
+    res.redirect(redirectUrl);
+
 }
 exports.hosting = async (req, res) => {
     // const userid = req.user.id;
@@ -60,9 +86,7 @@ exports.hosting = async (req, res) => {
         const cipher = crypto.createDecipheriv(algorithm, secret, iv);
         const Decrypted = Buffer.concat([cipher.update(Data, 'hex'), cipher.final()]);
         Data = Decrypted.toString('utf-8')
-    } else
-        query.accessList.push({ "ip": req.ip, "timestamp": new Date() })
-    await query.save()
+    } 
     res.json({ Data })
 }
 
