@@ -60,7 +60,7 @@ exports.generateUrl = async (req, res) => {
 }
 exports.forward = async (req,res) =>{
     const queryid = req.params.queryid;
-    const query = Query.findById(queryid)
+    const query = await Query.findById(queryid)
     query.accessList.push({ "ip": req.ip, "timestamp": new Date() })
     let redirectUrl;
     if(query.isUrl){
