@@ -9,7 +9,7 @@ const { generateUrl, deleteLink, renewLink, hosting, track, forward} = require('
 
 router.post('/generateUrl',auth.authenticate(), generateUrl)
 .post('/host',hosting)
-.get('/host',forward)
+.get('/host/:queryid',forward)
 .get('/track/',auth.authenticate(),track)
 .post('/delete',auth.authenticate(), deleteLink)
 .post('/renew',auth.authenticate(), renewLink)
