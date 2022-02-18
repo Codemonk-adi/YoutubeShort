@@ -4,16 +4,11 @@ const User = require("../models/user")
 const fetch = require('node-fetch')
 const https = require('https')
 const crypto = require('crypto');
-const { response } = require("express")
-// require(")
-// const { PythonShell } = require('python-shell');
-// const imageToBase64 = require('image-to-base64');
-// let fs = require("fs
 
 exports.generateUrl = async (req, res) => {
     const user = req.user;
     let Data = String()
-    if(!req.files)
+    if (!req.files)
         Data = req.body.data;
     else
         Data = req.files.file.data.toString('utf8')
@@ -28,7 +23,7 @@ exports.generateUrl = async (req, res) => {
 
         const encrypted = Buffer.concat([cipher.update(Data), cipher.final()]);
         Data = encrypted.toString('hex')
-        
+
 
     }
     const timestamp = new Date()
@@ -42,11 +37,13 @@ exports.generateUrl = async (req, res) => {
     })
     user.queries.push(query.id);
     user.save()
-    query.save()
-    https.get(`https://api.shrtco.de/v2/shorten?url=https://polynomial-front.netlify.app/display/${query.id}/${query.isEncrypted}`,(response)=>{
+    https.get(`https://api.shrtco.de/v2/shorten?url=https://polynomial-front.netlify.app/display/${query.id}/${query.isEncrypted}`, (response) => {
         response.on('data', (d) => {
-            res.json({"URL":JSON.parse(d.toString()).result.full_short_link})
-          });
+            const url = JSON.parse(d.toString()).result.full_short_link 
+            query.url = url
+            query.save()
+            res.json({ "URL": url})
+        });
     })
 }
 exports.hosting = async (req, res) => {
@@ -56,103 +53,37 @@ exports.hosting = async (req, res) => {
     const query = await Query.findById(queryid)
     Data = query.Data
 
-    if(key){
-    const algorithm = 'aes-256-ctr';
-    iv = query.iv;
-    const secret = crypto.createHash('sha256').update(key).digest('base64').substr(0, 32);
-    const cipher = crypto.createDecipheriv(algorithm, secret, iv);
-    const Decrypted = Buffer.concat([cipher.update(Data,'hex'), cipher.final()]);
-    Data = Decrypted.toString('utf8')
-    }else
-    query.accessList.push({ "ip": req.ip, "timestamp": new Date() })
+    if (key) {
+        const algorithm = 'aes-256-ctr';
+        iv = query.iv;
+        const secret = crypto.createHash('sha256').update(key).digest('base64').substr(0, 32);
+        const cipher = crypto.createDecipheriv(algorithm, secret, iv);
+        const Decrypted = Buffer.concat([cipher.update(Data, 'hex'), cipher.final()]);
+        Data = Decrypted.toString('utf-8')
+    } else
+        query.accessList.push({ "ip": req.ip, "timestamp": new Date() })
     await query.save()
-    res.json({Data})
+    res.json({ Data })
 }
 
 exports.track = async (req, res) => {
-    // const userid = req.user.id;
-    const queryid = req.params.queryid;
-    const query = await Query.findById(queryid)
-    accessList = query.accessList
+    const queries = req.user.queries;
+    // console.dir(queries)
+    // Finalist = []
+    const queryarray = await Query.find({ '_id': { "$in": queries} })
+    // console.log(queryarray)
+
+    finalist =  queryarray.map(query =>{
+        const {id,url,timestamp,ExpireAt,accessList} = query
+        const sorted = accessList.sort((a,b)=>{
+            return a.timestamp.getTime() - b.timestamp.getTime()
+        })
+        return {id,timestamp,ExpireAt,sorted,url}
+    })
     // await query.save()
-    res.json(accessList)
+    res.json(finalist)
 }
 
-
-
-// exports.nosaveparser = async(req, res) => {
-//     const templateID = req.body.templateid;
-//     if (req.files.length == 0) {
-//         res.json({ "msg": "No files Attached" })
-//     }
-//     // console.dir(query.parsed[0])
-//     // console.dir(req.files)
-
-//     // console.dir(query.parsed[0])
-//     let finalout = []
-//         // const promises = []
-
-//     function create_process(file) {
-//         return new bbPromise((resolve, reject) => {
-//             // console.dir(query.templateID)
-//             // console.dir(file)
-//             var c_process = spawn('python', ["./pythonCode/main.py",
-//                 file.path,
-//                 file.mimetype,
-//                 templateID
-//             ])
-
-//             c_process.stdout.on('data', data => {
-//                 // console.log(data.toString())
-//                 // console.log(data.toString())
-//                 try {
-//                     out = JSON.parse(data.toString())
-//                     finalout.push(out)
-//                 } catch (e) {
-//                     console.log(data.toString())
-//                 }
-//             })
-
-//             c_process.stderr.on('data', function(err) {
-//                 // console.log(err.toString())
-//                 reject(err.toString());
-//             });
-//             // promises.push(c_process)
-//             c_process.on('close', () => {
-//                 resolve()
-//             });
-//         })
-//     }
-
-
-//     bbPromise.map(req.files, (file) => {
-//         return create_process(file)
-//     }).then(() => {
-//         res.json(finalout)
-//     })
-
-// }
-// exports.refinedSearch = async(req, res) => {
-//     const {
-//         options,
-//         queryid,
-//     } = req.body
-//     const query = await Query.findById(queryid)
-//     let output = []
-//     let parsed = {}
-//     for (doc in query.parsed) {
-//         if (doc.isparsed == false) {
-//             continue;
-//         }
-//         parsed = doc.document;
-//         for (opt in options) {
-//             _.get(parsed, opt)
-//         }
-
-//     }
-
-
-// }
 
 exports.renewLink = async (req, res) => {
     const { queryid } = req.body;

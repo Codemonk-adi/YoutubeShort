@@ -15,6 +15,7 @@ const querySchema = new Schema({
         ip : String,
         timestamp: Date
     }],
+    url:String,
     iv : Buffer
 })
 

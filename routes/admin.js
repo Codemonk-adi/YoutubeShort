@@ -9,7 +9,7 @@ const { generateUrl, deleteLink, renewLink, hosting, track} = require('../contro
 
 router.post('/generateUrl',auth.authenticate(), generateUrl)
 .post('/host',hosting)
-.get('/track/:queryid',track)
+.get('/track/',auth.authenticate(),track)
 .post('/delete',auth.authenticate(), deleteLink)
 .post('/renew',auth.authenticate(), renewLink)
 
