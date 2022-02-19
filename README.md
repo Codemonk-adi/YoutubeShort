@@ -28,7 +28,7 @@ React is used in frontend and is deployed on netlify.
 Backend: https://consise-farms.herokuapp.com/
 
 
-Frontend: https://polynomial-front.netlify.app/signin
+Frontend: https://polynomial-front.netlify.app/
 
 <video src='https://github.com/Codemonk-adi/urlshortner/blob/master/Polynomial-Demo.mp4' width=180/>
 
