@@ -30,6 +30,89 @@ Backend: https://consise-farms.herokuapp.com/
 
 Frontend: https://polynomial-front.netlify.app/
 
+<b> Routes </b>
+
+<b>Post</b>
+
+&emsp;/api/signup
+
+&emsp;&emsp;&emsp;requries jwt authenticaton : false
+
+&emsp;&emsp;&emsp;expected parameters: firstName : String, lastName : String, username : Email , password : String
+
+&emsp;&emsp;&emsp;response: token : jwt auth token.
+
+
+&emsp;/api/login
+
+&emsp;&emsp;&emsp;requries jwt authenticaton : false
+
+&emsp;&emsp;&emsp;expected parameters: username : Email , password : String
+
+&emsp;&emsp;&emsp;response: token : jwt auth token.
+
+
+&emsp;/admin/generateUrl
+
+&emsp;&emsp;&emsp;requries jwt authenticaton : true
+
+&emsp;&emsp;&emsp;expected parameters: Data : String , key : String
+
+&emsp;&emsp;&emsp;response: URL : String 
+
+
+&emsp;/admin/host
+
+&emsp;&emsp;&emsp;requries jwt authenticaton : false
+
+&emsp;&emsp;&emsp;expected parameters: queryid : Stirng , key : String
+
+&emsp;&emsp;&emsp;response: Data : text
+
+
+&emsp;/admin/delete
+
+&emsp;&emsp;&emsp;requries jwt authenticaton : true
+
+&emsp;&emsp;&emsp;expected parameters: queryid : Stirng 
+
+&emsp;&emsp;&emsp;response: status : query status
+
+
+&emsp;/admin/renew
+
+&emsp;&emsp;&emsp;requries jwt authenticaton : true
+
+&emsp;&emsp;&emsp;expected parameters: queryid : Stirng 
+
+&emsp;&emsp;&emsp;response: status : query status
+
+
+&emsp;/admin/details
+
+&emsp;&emsp;&emsp;requries jwt authenticaton : true
+
+&emsp;&emsp;&emsp;expected parameters: queryid : Stirng 
+
+&emsp;&emsp;&emsp;response: status : query status
+
+<b> Get </b>
+
+
+&emsp;/admin/host/:queryid
+
+&emsp;&emsp;&emsp;requries jwt authenticaton : false
+
+&emsp;&emsp;&emsp;response: redirect to URL or Frontend to decrypt/display data
+
+
+&emsp;/admin/host/tract
+
+&emsp;&emsp;&emsp;requries jwt authenticaton : true
+
+&emsp;&emsp;&emsp;response:[ {id : queryid , timestamp : Time Creation, ExpireAt : Time of expiration, url : shortened link},{...}]
+
+
 <video src='https://github.com/Codemonk-adi/urlshortner/blob/master/Polynomial-Demo.mp4' width=180/>
 
 ![Demo Video](https://github.com/Codemonk-adi/urlshortner/blob/master/Polynomial-Demo.mp4)
