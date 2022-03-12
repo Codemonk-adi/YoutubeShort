@@ -30,8 +30,9 @@ exports.generateUrl = async (req, res) => {
 
     }
     let isUrl = true;
-    try{ new URL(Data)
-    }catch(e){
+    try {
+        new URL(Data)
+    } catch (e) {
         isUrl = false;
     }
 
@@ -51,21 +52,21 @@ exports.generateUrl = async (req, res) => {
     user.save()
     https.get(`https://api.shrtco.de/v2/shorten?url=https://consise-farms.herokuapp.com/admin/host/${query.id}`, (response) => {
         response.on('data', (d) => {
-            const url = JSON.parse(d.toString()).result.full_short_link 
+            const url = JSON.parse(d.toString()).result.full_short_link
             query.url = url
             query.save()
-            res.json({ "URL": url})
+            res.json({ "URL": url })
         });
     })
 }
-exports.forward = async (req,res) =>{
+exports.forward = async (req, res) => {
     const queryid = req.params.queryid;
     const query = await Query.findById(queryid)
     query.accessList.push({ "ip": req.ip, "timestamp": new Date() })
     let redirectUrl;
-    if(query.isUrl){
+    if (query.isUrl) {
         redirectUrl = query.Data;
-    }else{
+    } else {
         redirectUrl = `https://polynomial-front.netlify.app/display/${query.id}/${query.isEncrypted}`
     }
     await query.save()
@@ -86,7 +87,7 @@ exports.hosting = async (req, res) => {
         const cipher = crypto.createDecipheriv(algorithm, secret, iv);
         const Decrypted = Buffer.concat([cipher.update(Data, 'hex'), cipher.final()]);
         Data = Decrypted.toString('utf-8')
-    } 
+    }
     res.json({ Data })
 }
 
@@ -94,15 +95,12 @@ exports.track = async (req, res) => {
     const queries = req.user.queries;
     // console.dir(queries)
     // Finalist = []
-    const queryarray = await Query.find({ '_id': { "$in": queries} })
+    const queryarray = await Query.find({ '_id': { "$in": queries } })
     // console.log(queryarray)
 
-    finalist = await queryarray.map(query =>{
-        const {id,url,timestamp,ExpireAt,accessList} = query
-        const sorted = accessList.sort((a,b)=>{
-            return a.timestamp.getTime() - b.timestamp.getTime()
-        })
-        return {id,timestamp,ExpireAt,sorted,url}
+    finalist = queryarray.map(query => {
+        const { id, url, timestamp, ExpireAt } = query
+        return { id, timestamp, ExpireAt, url }
     })
     // await query.save()
     res.json(finalist)
@@ -127,9 +125,9 @@ exports.deleteLink = async (req, res) => {
 exports.accessdetails = async (req, res) => {
     const { queryid } = req.body;
     const query = await Query.findById(queryid)
-    const {accessList} = query
-        const sorted = accessList.sort((a,b)=>{
-            return a.timestamp.getTime() - b.timestamp.getTime()
-        })
-    res.json({ sorted});
+    const { accessList } = query
+    const sorted = accessList.sort((a, b) => {
+        return a.timestamp.getTime() - b.timestamp.getTime()
+    })
+    res.json({ sorted });
 }
