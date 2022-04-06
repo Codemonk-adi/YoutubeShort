@@ -7,7 +7,7 @@ const url_check = require('url')
     // import url from 'url';
 const crypto = require('crypto');
 const { query } = require("express")
-
+const urlParser = require("js-video-url-parser")
 exports.generateUrl = async(req, res) => {
     const user = req.user;
     let Data = String()
@@ -31,12 +31,13 @@ exports.generateUrl = async(req, res) => {
     }
     let isUrl = true;
     let isYoutube = false;
+    let embed = "";
     try {
         const url = new URL(Data)
-        console.log(url);
-
-        if (url.hostname == process.env.HOST) {
+        parsed = urlParser.parse(Data)
+        if (parsed) {
             isYoutube = true;
+            embed = parsed.id
         }
     } catch (e) {
         isUrl = false;
@@ -46,15 +47,16 @@ exports.generateUrl = async(req, res) => {
     const timestamp = new Date()
     const ExpireAt = new Date(timestamp.getTime() + 24 * 60 * 60 * 1000);
     const query = new Query({
-        timestamp,
-        ExpireAt,
-        isEncrypted,
-        Data,
-        iv,
-        isUrl,
-        isYoutube
-    })
-    console.log(isYoutube)
+            timestamp,
+            ExpireAt,
+            isEncrypted,
+            Data,
+            iv,
+            isUrl,
+            isYoutube,
+            embed
+        })
+        // console.log(isYoutube)
     user.queries.push(query.id);
     // https://polynomial-front.netlify.app/display/${query.id}/${query.isEncrypted}
     // https://consise-farms.herokuapp.com/host/${query.id}
