@@ -4,11 +4,11 @@ const User = require("../models/user")
 const fetch = require('node-fetch')
 const https = require('https')
 const url_check = require('url')
-// import url from 'url';
+    // import url from 'url';
 const crypto = require('crypto');
 const { query } = require("express")
 
-exports.generateUrl = async (req, res) => {
+exports.generateUrl = async(req, res) => {
     const user = req.user;
     let Data = String()
     if (!req.files)
@@ -30,11 +30,15 @@ exports.generateUrl = async (req, res) => {
 
     }
     let isUrl = true;
+    let isYoutube = false;
     try {
-        new URL(Data)
+        const url = new URL(Data)
+        if (url.hostname == process.env.HOST)
+            isYoutube = true;
     } catch (e) {
         isUrl = false;
     }
+
 
     const timestamp = new Date()
     const ExpireAt = new Date(timestamp.getTime() + 24 * 60 * 60 * 1000);
@@ -44,8 +48,10 @@ exports.generateUrl = async (req, res) => {
         isEncrypted,
         Data,
         iv,
-        isUrl
+        isUrl,
+        isYoutube
     })
+    console.log(isYoutube)
     user.queries.push(query.id);
     // https://polynomial-front.netlify.app/display/${query.id}/${query.isEncrypted}
     // https://consise-farms.herokuapp.com/host/${query.id}
@@ -59,9 +65,12 @@ exports.generateUrl = async (req, res) => {
         });
     })
 }
-exports.forward = async (req, res) => {
+exports.forward = async(req, res) => {
     const queryid = req.params.queryid;
     const query = await Query.findById(queryid)
+    if (!query) {
+        res.send("Invalid URL")
+    }
     query.accessList.push({ "ip": req.ip, "timestamp": new Date() })
     let redirectUrl;
     if (query.isUrl) {
@@ -73,7 +82,7 @@ exports.forward = async (req, res) => {
     res.redirect(redirectUrl);
 
 }
-exports.hosting = async (req, res) => {
+exports.hosting = async(req, res) => {
     // const userid = req.user.id;
     const queryid = req.body.queryid;
     const key = req.body.key;
@@ -91,30 +100,30 @@ exports.hosting = async (req, res) => {
     res.json({ Data })
 }
 
-exports.track = async (req, res) => {
+exports.track = async(req, res) => {
     const queries = req.user.queries;
     // console.dir(queries)
     // Finalist = []
     const queryarray = await Query.find({ '_id': { "$in": queries } })
-    // console.log(queryarray)
+        // console.log(queryarray)
 
     finalist = queryarray.map(query => {
-        const { id, url, timestamp, ExpireAt } = query
-        return { id, timestamp, ExpireAt, url }
-    })
-    // await query.save()
+            const { id, url, timestamp, ExpireAt } = query
+            return { id, timestamp, ExpireAt, url }
+        })
+        // await query.save()
     res.json(finalist)
 }
 
 
-exports.renewLink = async (req, res) => {
+exports.renewLink = async(req, res) => {
     const { queryid } = req.body;
     const timestamp = new Date()
     const ExpireAt = new Date(timestamp.getTime() + 24 * 60 * 60 * 1000);
     await Query.findByIdAndUpdate(queryid, { $set: { ExpireAt } })
     res.json({ "status": "Success" });
 }
-exports.deleteLink = async (req, res) => {
+exports.deleteLink = async(req, res) => {
 
     const { queryid } = req.body;
     console.log(req.user.id)
@@ -122,7 +131,7 @@ exports.deleteLink = async (req, res) => {
     await Query.findByIdAndDelete(queryid);
     res.json({ "status": "Success" });
 }
-exports.accessdetails = async (req, res) => {
+exports.accessdetails = async(req, res) => {
     const { queryid } = req.body;
     const query = await Query.findById(queryid)
     const { accessList } = query
