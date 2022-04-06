@@ -15,6 +15,20 @@ exports.generateUrl = async(req, res) => {
         Data = req.body.data;
     else
         Data = req.files.file.data.toString('utf8')
+    let isUrl = true;
+    let isYoutube = false;
+    let embed = "";
+    try {
+        const url = new URL(Data)
+        parsed = urlParser.parse(Data)
+        if (parsed) {
+            isYoutube = true;
+            embed = parsed.id
+        }
+    } catch (e) {
+        isUrl = false;
+    }
+
     let iv = Buffer.alloc(16)
     const key = req.body.key;
     const isEncrypted = Boolean(key);
@@ -28,19 +42,6 @@ exports.generateUrl = async(req, res) => {
         Data = encrypted.toString('hex')
 
 
-    }
-    let isUrl = true;
-    let isYoutube = false;
-    let embed = "";
-    try {
-        const url = new URL(Data)
-        parsed = urlParser.parse(Data)
-        if (parsed) {
-            isYoutube = true;
-            embed = parsed.id
-        }
-    } catch (e) {
-        isUrl = false;
     }
 
 
@@ -78,7 +79,7 @@ exports.forward = async(req, res) => {
     }
     query.accessList.push({ "ip": req.ip, "timestamp": new Date() })
     let redirectUrl;
-    if (query.isUrl) {
+    if (query.isUrl && !query.isEncrypted) {
         redirectUrl = query.Data;
     } else {
         redirectUrl = `https://polynomial-front.netlify.app/display/${query.id}/${query.isEncrypted}`
