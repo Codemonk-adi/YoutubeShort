@@ -61,7 +61,7 @@ exports.generateUrl = async(req, res) => {
     // https://polynomial-front.netlify.app/display/${query.id}/${query.isEncrypted}
     // https://consise-farms.herokuapp.com/host/${query.id}
     user.save()
-    https.get(`https://api.shrtco.de/v2/shorten?url=https://consise-farms.herokuapp.com/admin/host/${query.id}`, (response) => {
+    https.get(`https://api.shrtco.de/v2/shorten?url=https://my-poly.herokuapp.com/admin/host/${query.id}`, (response) => {
         response.on('data', (d) => {
             const url = JSON.parse(d.toString()).result.full_short_link
             query.url = url
