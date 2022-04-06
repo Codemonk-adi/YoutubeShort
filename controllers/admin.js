@@ -33,8 +33,11 @@ exports.generateUrl = async(req, res) => {
     let isYoutube = false;
     try {
         const url = new URL(Data)
-        if (url.hostname == process.env.HOST)
+        console.log(url);
+
+        if (url.hostname == process.env.HOST) {
             isYoutube = true;
+        }
     } catch (e) {
         isUrl = false;
     }
