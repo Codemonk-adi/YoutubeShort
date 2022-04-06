@@ -108,8 +108,8 @@ exports.track = async(req, res) => {
         // console.log(queryarray)
 
     finalist = queryarray.map(query => {
-            const { id, url, timestamp, ExpireAt } = query
-            return { id, timestamp, ExpireAt, url }
+            const { id, url, isYoutube, embed, timestamp, ExpireAt } = query
+            return { id, isYoutube, embed, timestamp, ExpireAt, url }
         })
         // await query.save()
     res.json(finalist)

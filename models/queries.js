@@ -21,6 +21,7 @@ const querySchema = new Schema({
         type: Boolean,
         default: false
     },
+    embed: String,
     iv: Buffer
 })
 
