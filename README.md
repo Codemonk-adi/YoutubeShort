@@ -1,4 +1,4 @@
-# URLshortner
+# Youtube Shortner
 
 
 
@@ -8,31 +8,33 @@ https://user-images.githubusercontent.com/56336914/154789358-a5fe34e4-7d77-4041-
 
 
 
-This service makes transfering text and code easier and secure, as a bonus it also doubles down as a url shortner.
+This service shortens URLs and provides encryption facility for secure transmission.
 A registered user can sign in and enter Text/uploadtext files/paste in the text area and has the option to enter a key for encryption.
-upon submission, a shortened url is generated, clicking the link takes the user to the frontend where the time and ip address is logged and the data is decryted if needed.
+upon submission, a shortened url is generated, clicking the link takes the user to the frontend where the time and ip address is logged and the data is decrypted if needed.
+
+If no encrytion is requested the the link takes the user to the youtube video directy
 
 Track route lists all the queries for the user with the ip address and time of access,
 delete route deletes the query and the renew route extends the life of the link.
 
-links get deleted after a day using TTL in mongodb.
+links get deleted after a week using TTL in mongodb.
 
-Tech Stack
+## Tech Stack
 
 Backend is built using node and express and MongoDB is used to store the user info as well as the query details. Heroku is used to deploy the backend.
 
 React is used in frontend and is deployed on netlify.
 
-<b>Deployment Link </b>
+## Deployment Link 
 
-Backend: https://consise-farms.herokuapp.com/
+Backend: https://my-poly.herokuapp.com/
 
 
 Frontend: https://polynomial-front.netlify.app/
 
-<b> Routes </b>
+## Routes 
 
-<b>Post</b>
+### Post
 
 &emsp;/api/signup
 
@@ -96,7 +98,7 @@ Frontend: https://polynomial-front.netlify.app/
 
 &emsp;&emsp;&emsp;response: status : query status
 
-<b> Get </b>
+### Get 
 
 
 &emsp;/admin/host/:queryid
