@@ -86,7 +86,7 @@ exports.generateUrl = async(req, res) => {
     console.timeEnd('shortlink');
     query.save()
     console.timeEnd('querysave');
-    res.json({ "URL": url })
+    res.json({ "URL": bitly_res.link })
 }
 exports.forward = async(req, res) => {
     const queryid = req.params.queryid;
