@@ -3,7 +3,10 @@
 
 
 
-https://user-images.githubusercontent.com/56336914/154789358-a5fe34e4-7d77-4041-9095-29442baf6eac.mp4
+
+
+
+https://user-images.githubusercontent.com/56336914/162129195-90399150-4d23-43e6-8e66-57092989e468.mp4
 
 
 
@@ -115,11 +118,5 @@ Frontend: https://polynomial-front.netlify.app/
 &emsp;&emsp;&emsp;response:[ {id : queryid , timestamp : Time Creation, ExpireAt : Time of expiration, url : shortened link},{...}]
 
 
-<video src='https://github.com/Codemonk-adi/urlshortner/blob/master/Polynomial-Demo.mp4' width=180/>
 
-![Demo Video](https://github.com/Codemonk-adi/urlshortner/blob/master/Polynomial-Demo.mp4)
-![Home Page](https://github.com/Codemonk-adi/urlshortner/blob/master/Home-page.png)
-![Signup](https://github.com/Codemonk-adi/urlshortner/blob/master/signup-page.png)
-
-  
 
