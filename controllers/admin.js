@@ -8,7 +8,12 @@ const url_check = require('url')
 const crypto = require('crypto');
 const { query } = require("express")
 const urlParser = require("js-video-url-parser")
+const BitlyClient = require('bitly').BitlyClient;
+const bitly = new BitlyClient(process.env.Bitly);
 exports.generateUrl = async(req, res) => {
+    console.time('local')
+    console.time('usersave')
+    console.time('querysave')
     const user = req.user;
     let Data = String()
     if (!req.files)
@@ -59,17 +64,27 @@ exports.generateUrl = async(req, res) => {
         })
         // console.log(isYoutube)
     user.queries.push(query.id);
+
+    console.timeEnd('local');
     // https://polynomial-front.netlify.app/display/${query.id}/${query.isEncrypted}
     // https://consise-farms.herokuapp.com/host/${query.id}
     user.save()
+    console.timeEnd('usersave');
+
+
     https.get(`https://api.shrtco.de/v2/shorten?url=https://my-poly.herokuapp.com/admin/host/${query.id}`, (response) => {
         response.on('data', (d) => {
+            console.timeEnd('querysave');
             const url = JSON.parse(d.toString()).result.full_short_link
             query.url = url
             query.save()
             res.json({ "URL": url })
         });
     })
+    console.time('shortlink')
+    const bitly_res = await bitly.shorten(`https://api.shrtco.de/v2/shorten?url=https://my-poly.herokuapp.com/admin/host/${query.id}`);
+    console.dir(bitly_res);
+    console.timeEnd('shortlink');
 }
 exports.forward = async(req, res) => {
     const queryid = req.params.queryid;
