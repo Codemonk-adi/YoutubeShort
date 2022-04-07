@@ -13,6 +13,7 @@ const bitly = new BitlyClient(process.env.Bitly);
 exports.generateUrl = async(req, res) => {
     console.time('local')
     console.time('usersave')
+    console.time('shortlink')
     console.time('querysave')
     const user = req.user;
     let Data = String()
@@ -72,19 +73,20 @@ exports.generateUrl = async(req, res) => {
     console.timeEnd('usersave');
 
 
-    https.get(`https://api.shrtco.de/v2/shorten?url=https://my-poly.herokuapp.com/admin/host/${query.id}`, (response) => {
-        response.on('data', (d) => {
-            console.timeEnd('querysave');
-            const url = JSON.parse(d.toString()).result.full_short_link
-            query.url = url
-            query.save()
-            res.json({ "URL": url })
-        });
-    })
-    console.time('shortlink')
-    const bitly_res = await bitly.shorten(`https://api.shrtco.de/v2/shorten?url=https://my-poly.herokuapp.com/admin/host/${query.id}`);
-    console.dir(bitly_res);
+    // https.get(`https://api.shrtco.de/v2/shorten?url=https://my-poly.herokuapp.com/admin/host/${query.id}`, (response) => {
+    //     response.on('data', (d) => {
+    //         const url = JSON.parse(d.toString()).result.full_short_link
+    //         query.url = url
+    //         query.save()
+    //         res.json({ "URL": url })
+    //     });
+    // })
+    const bitly_res = await bitly.shorten(`https://my-poly.herokuapp.com/admin/host/${query.id}`);
+    query.url = bitly_res.link
     console.timeEnd('shortlink');
+    query.save()
+    console.timeEnd('querysave');
+    res.json({ "URL": url })
 }
 exports.forward = async(req, res) => {
     const queryid = req.params.queryid;
